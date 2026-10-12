@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Do You Love Me ?</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { display: flex; background: #f7c0c8; font-family: "Montserrat", sans-serif; height: 100dvh; position: relative; overflow: hidden; justify-content: center; align-items: center; flex-direction: column; gap: 24px;}
+      img { width: 100%; display: block; }
+      .boxheart { transition: 3s; }
+      .heart, .beat { position: fixed; width: 300px; height: 300px; top: calc(50% - 150px); left: calc(50% - 150px); text-align: center; transform: scale(0.95);
+        animation-duration: 2000ms; animation-timing-function: cubic-bezier(0, 0, 0, 1.74); animation-delay: 500ms; animation-iteration-count: infinite; cursor: pointer;}
+      .boxheart.active { opacity: 0; visibility: hidden; }
+      .boxheart.active .heart::before { left: -300px; }
+      .boxheart.active .heart::after  { left: 300px; }
+      .heart { animation-name: heartbeat; }
+      .heart h1 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; color: #f6ff00;}
+      .beat { animation-name: beat; }
+      .heart::before, .heart::after,
+      .beat::before,  .beat::after { content: ""; position: fixed; top: 40px; width: 150px; height: 240px; background: #f66; border-radius: 150px 150px 0 0; transform: rotate(-45deg); transform-origin: 0 100%; transition: 2s;}
+      .heart::before, .beat::before { left: 150px; }
+      .heart::after,  .beat::after  { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
+      @keyframes heartbeat { 0%,100%{transform:scale(0.9);} 50%{transform:scale(1);} }
+      @keyframes beat { 0%{opacity:0.1;transform:scale(1);} 100%{opacity:0;transform:scale(10);} }
+      .boxchoose { width: 80%; max-width: 700px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 2s; transition-delay: 2s;}
+      .boxchoose.active { opacity: 1; pointer-events: auto; }
+      .boxchoose h2 { color: rgb(255,0,0); font-size: 30px; text-shadow: 1px 3px 8px #00000070; margin-bottom: 20px; }
+      .boxchoose h4 { color: #fff; text-shadow: 1px 3px 8px #00000070; margin-bottom: 20px; }
+      .boximghoverbtn { position: relative; width: 80%; max-width: 400px; margin: 0 auto; border-radius: 8px; overflow: hidden;}
+      .boximghoverbtn::after { content: ""; display: block; padding-top: 100%; }
+      .boximghoverbtn img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease;}
+      .boximghoverbtn img.active { opacity: 1; z-index: 1; }
+      .listbutton { display: flex; justify-content: center; align-items: center; gap: 24px; opacity: 0; pointer-events: none; transition: opacity 2s; transition-delay: 2s; min-height: 80px;}
+      .listbutton.active { opacity: 1; pointer-events: auto; }
+      .btn-base { border: none; font-family: inherit; font-weight: 700; border-radius: 14px; /* hình chữ nhật bo góc nhẹ */ cursor: pointer; touch-action: manipulation; letter-spacing: 0.5px; position: relative; overflow: hidden; flex-shrink: 0;}
+      .btn-base::before { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.4s ease; z-index: 1; pointer-events: none;}
+      .btn-base:hover::before { transform: translateX(100%); }
+      #no { width: 200px; height: 70px; font-size: 28px; background: linear-gradient(135deg, #ffb3b3, #ff8a8a); color: #7a1a00; box-shadow: 0 4px 0 #cc5a5a, 0 6px 16px rgba(200,80,80,0.3); transition: box-shadow 0.15s, transform 0.15s, top 0.3s ease, left 0.3s ease; z-index: 50;}
+      #no:hover  { box-shadow: 0 6px 0 #cc5a5a, 0 10px 20px rgba(200,80,80,0.4); }
+      #no:active { transform: translateY(3px); box-shadow: 0 1px 0 #cc5a5a; }
+      #yes { width: 200px; height: 70px; font-size: 28px; background: linear-gradient(135deg, #ff85a1, #e8436e); color: #fff; box-shadow: 0 4px 0 #b02050, 0 6px 20px rgba(200,50,100,0.35); transition: box-shadow 0.15s, transform 0.15s; z-index: 10;}
+      #yes:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #b02050, 0 10px 24px rgba(200,50,100,0.4); }
+      #yes:active { transform: translateY(2px);  box-shadow: 0 2px 0 #b02050; }
+      .popup { position: fixed; inset: 0; background-color: #f8b3bb; z-index: 999; opacity: 0; pointer-events: none; transition: 1s;}
+      .popup.active { opacity: 1; pointer-events: auto; }
+      .popup .inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); text-align: center; background-color: #e2919a; width: 70%; padding: 50px; border-radius: 30px; box-shadow: rgba(17,12,46,0.15) 0px 48px 100px 0px; transition: 1s;}
+      .popup.active .inner { transform: translate(-50%,-50%) scale(1); }
+      .popup img { width: 50%; margin: 0 auto; border-radius: 30px; }
+      .popup h3  { font-size: 28px; color: #ed4a5d; margin-bottom: 20px; text-shadow: 5px 4px 23px #fff; font-weight: bold; }
+      .popup p   { font-size: 17px; margin-top: 15px; color: #fff; text-shadow: 1px 1px 1px #808080; font-weight: bold; }
+      .popup p span { color: yellow; }
+      .confirm-btn { display: inline-block; margin-top: 24px; padding: 12px 28px; border: none; border-radius: 30px; background: linear-gradient(135deg, #4cd964, #2ecc71); color: #fff; font-weight: 700; font-size: 16px; font-family: inherit; cursor: pointer; box-shadow: 0 4px 0 #1f9c52, 0 6px 14px rgba(0,0,0,0.25); transition: box-shadow 0.15s, transform 0.15s;}
+      .confirm-btn:hover  { box-shadow: 0 6px 0 #1f9c52, 0 10px 18px rgba(0,0,0,0.3); }
+      .confirm-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #1f9c52; }
+      @media (max-width: 576px) {
+        body { justify-content: center; align-items: center; gap: 16px;}
+        .boxchoose { width: 92%; max-width: 100%; padding: 0 4px;}
+        .boxchoose h2 { font-size: 20px; margin-bottom: 12px; }
+        .boxchoose h4 { font-size: 14px; margin-bottom: 12px; }
+        .boximghoverbtn { width: 70%; }
+        .listbutton { position: relative; width: 100%; height: 160px; min-height: 160px; overflow: hidden; gap: 0; justify-content: flex-start; align-items: center; padding: 0;}
+        #yes { position: absolute; font-size: 16px; transition: width 0.35s ease, height 0.35s ease, left 0.35s ease, top 0.35s ease, font-size 0.35s ease, box-shadow 0.15s, transform 0.15s;}
+        #no { position: absolute; font-size: 16px; transition: width 0.35s ease, height 0.35s ease, left 0.35s ease, top 0.35s ease, opacity 0.35s ease, box-shadow 0.15s, transform 0.15s; z-index: 50;}
+        .popup .inner { width: 90%; padding: 24px; }
+        .popup img { width: 80%; }
+        .popup h3 { font-size: 22px; }
+        .confirm-btn { font-size: 14px; padding: 10px 22px; margin-top: 18px; }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="musicHeart" src="tainguyen/audio/sound.mp3" loop preload="auto"></audio>
+    <audio id="musicChoose" src="tainguyen/audio/anhtheday.mp3" loop preload="auto"></audio>
+    <audio id="musicPopup" src="tainguyen/audio/love.mp3" loop preload="auto"></audio>
+    <div class="boxheart">
+      <div class="heart"><h1>Bấm vào đây</h1></div>
+      <div class="beat"></div>
+    </div>
+    <div class="boxchoose" onmouseenter="showImage('img1')">
+      <h2>LÀM BẠN GÁI ANH NHÉ<br />BẤY BI 💖</h2>
+      <h4>Em mà không trả lời hay thoát ra<br />là đồng ý rồi đó nha :3</h4>
+      <div class="boximghoverbtn">
+        <img id="img1" src="tainguyen/img/3.GIF" class="active" />
+        <img id="img2" src="tainguyen/img/4.GIF" />
+        <img id="img3" src="tainguyen/img/5.GIF" />
+      </div>
+    </div>
+    <div class="listbutton">
+      <button id="yes" class="btn-base" onmouseenter="showImage('img3')"> Vâng :3 </button>
+      <button id="no" class="btn-base" onmouseenter="showImage('img2')"> Đéo :] </button>
+    </div>
+    <div class="popup">
+      <div class="inner">
+        <h3>Anh biết em sẽ<br />đồng ý mà :>></h3>
+        <img src="tainguyen/img/1.GIF" alt="" />
+        <p><span>MẶC VÁY VÀO ĐI</span><br />tý anh qua dẫn<br /><span >ĐI CHƠI</span></p>
+        <button id="confirmCallBtn" class="confirm-btn"> Xác nhận cuộc hẹn</button>
+      </div>
+    </div>
+    <script>
+      const noBtn = document.querySelector("#no");
+      const yesBtn = document.querySelector("#yes");
+      const boxheart = document.querySelector(".boxheart");
+      const boxchoose = document.querySelector(".boxchoose");
+      const listBtn = document.querySelector(".listbutton");
+      const popup = document.querySelector(".popup");
+      const confirmCallBtn = document.querySelector("#confirmCallBtn");
+      const musicHeart = document.getElementById("musicHeart");
+      const musicChoose = document.getElementById("musicChoose");
+      const musicPopup = document.getElementById("musicPopup");
+      const bgTracks = [musicHeart, musicChoose, musicPopup];
+      let playingAudios = [];
+      function playSound(src) {
+        const a = new Audio(src);
+        a.play().catch(() => {});
+        playingAudios.push(a);
+      }
+      function stopEffectSounds() {
+        playingAudios.forEach((a) => { a.pause(); a.currentTime = 0;});
+        playingAudios = [];
+      }
+      function playBgTrack(track) {
+        bgTracks.forEach((t) => {
+          if (t !== track) {
+            t.pause();
+            t.currentTime = 0;
+          }
+        });
+        track.currentTime = 0;
+        track.play().catch(() => {});
+      }
+      function tryAutoplayHeartMusic() {
+        const p = musicHeart.play();
+        if (p && typeof p.catch === "function") {
+          p.catch(() => {
+            const resume = () => {
+              if (
+                !boxchoose.classList.contains("active") &&
+                !popup.classList.contains("active")
+              ) { musicHeart.play().catch(() => {});}
+              document.removeEventListener("click", resume);
+              document.removeEventListener("touchstart", resume);
+            };
+            document.addEventListener("click", resume, { once: true });
+            document.addEventListener("touchstart", resume, { once: true });
+          });
+        }
+      }
+      tryAutoplayHeartMusic();
+      boxheart.addEventListener("click", function () {
+        playBgTrack(musicChoose);
+        boxheart.classList.add("active");
+        boxchoose.classList.add("active");
+        listBtn.classList.add("active");
+      });
+      yesBtn.addEventListener("click", function () {
+        stopEffectSounds();
+        playBgTrack(musicPopup);
+        popup.classList.add("active");
+      });
+      confirmCallBtn.addEventListener("click", function () {
+        // thay địa chỉ messenger của bạn vào link bên dưới
+        window.location.href = " ";
+      });
+      let imgTimeout;
+      function showImage(id) {
+        clearTimeout(imgTimeout);
+        document
+          .querySelectorAll(".boximghoverbtn img")
+          .forEach((i) => i.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        imgTimeout = setTimeout(() => {
+          document
+            .querySelectorAll(".boximghoverbtn img")
+            .forEach((i) => i.classList.remove("active"));
+          document.getElementById("img1").classList.add("active");
+        }, 8000);
+      }
+      const isMobile = () => window.matchMedia("(pointer: coarse)").matches;
+      let noFixed = false;
+      function moveNoButton() {
+        const pad = 16, bw = 200, bh = 70;
+        const maxL = window.innerWidth - bw - pad;
+        const maxT = window.innerHeight - bh - pad;
+        if (!noFixed) {
+          noBtn.style.position = "fixed";
+          noBtn.style.zIndex = "50";
+          noFixed = true;
+        }
+        noBtn.style.left = Math.max(pad, Math.floor(Math.random() * maxL)) + "px";
+        noBtn.style.top = Math.max(pad, Math.floor(Math.random() * maxT)) + "px";
+      }
+      const BASE_W = 150, BASE_H = 50;
+      const GAP = 10;
+      const LISTBTN_H = 160;
+      let step = 0;
+      function initMobileLayout() {
+        const vw = window.innerWidth;
+        const edgeGap = (vw - 2 * BASE_W - GAP) / 2;
+        const baseTop = (LISTBTN_H - BASE_H) / 2;
+        yesBtn.style.width = BASE_W + "px";
+        yesBtn.style.height = BASE_H + "px";
+        yesBtn.style.left = edgeGap + "px";
+        yesBtn.style.top = baseTop + "px";
+        yesBtn.style.fontSize = "16px";
+        noBtn.style.width = BASE_W + "px";
+        noBtn.style.height = BASE_H + "px";
+        noBtn.style.left = edgeGap + BASE_W + GAP + "px";
+        noBtn.style.top = baseTop + "px";
+        noBtn.style.fontSize = "16px";
+      }
+      const ASPECT = BASE_H / BASE_W;
+      function growYesPushNo() {
+        const vw = window.innerWidth;
+        if (noBtn.dataset.gone === "1") return;
+        step++;
+        playSound("tainguyen/audio/duck.mp3");
+        showImage("img2");
+        const edgeGap = (vw - 2 * BASE_W - GAP) / 2;
+        let noW, noH;
+        if (step === 1) { noW = BASE_W * 0.75; noH = BASE_H * 0.75;} 
+        else { noW = BASE_W * 0.5; noH = BASE_H * 0.5;}
+        let yesW, yesH;
+        if (step <= 2) { yesW = BASE_W; yesH = BASE_H;} 
+        else { const growSteps = step - 2;
+          yesW = BASE_W * (1 + 0.1 * growSteps);
+          yesH = Math.min(yesW * ASPECT, LISTBTN_H);
+        }
+        const prevNoLeft = parseFloat(noBtn.style.left) || 0;
+        const prevNoW = parseFloat(noBtn.style.width) || BASE_W;
+        const visibleNoW = vw - prevNoLeft;
+        const noMostlyGone = step > 2 && visibleNoW <= prevNoW / 3;
+        let yesLeft = edgeGap;
+        if (noMostlyGone) {
+          yesW = vw;
+          yesH = Math.min(yesW * ASPECT, LISTBTN_H);
+          yesLeft = 0;
+        }
+        yesBtn.style.width = yesW + "px";
+        yesBtn.style.height = yesH + "px";
+        yesBtn.style.left = yesLeft + "px";
+        yesBtn.style.top = Math.max(0, (LISTBTN_H - yesH) / 2) + "px";
+        noBtn.style.width = noW + "px";
+        noBtn.style.height = noH + "px";
+        noBtn.style.top = Math.max(0, (LISTBTN_H - noH) / 2) + "px";
+        const noLeft = yesLeft + yesW + GAP;
+        noBtn.style.left = noLeft + "px";
+        const yesF = Math.max(16, Math.min(40, yesW * 0.1));
+        yesBtn.style.fontSize = yesF + "px";
+        if (noLeft >= vw) { noBtn.dataset.gone = "1"; noBtn.style.pointerEvents = "none";}
+      }
+      if (isMobile()) {
+        boxheart.addEventListener("click", () => { setTimeout(initMobileLayout, 2300); });
+        noBtn.addEventListener(
+          "touchstart",
+          (e) => {
+            e.preventDefault();
+            growYesPushNo();
+          }, { passive: false }
+        ); noBtn.addEventListener("click", growYesPushNo);
+      } 
+      else {
+        noBtn.addEventListener("mouseenter", () => {
+          playSound("tainguyen/audio/duck.mp3");
+          showImage("img2");
+          moveNoButton();
+        }); noBtn.addEventListener("click", moveNoButton);
+      }
+    </script>
+  </body>
+</html>
